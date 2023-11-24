@@ -5,8 +5,8 @@ fPath = "frames/"
 gPath = "grayscale/"
 facesP = "faces/"
 extension = ".mp4"
-nVids = 7
-nFrames = 1109
+nVids = 17
+nFrames = 0
 
 def splitToFrames(videosPath, framesPath, frameNum, videosExt, numVids):
 	for i in range(numVids):
@@ -29,26 +29,27 @@ def imgToGrayscale(frame, grayscalePath, indx):
 	cv2.imwrite(f"{grayscalePath}{indx}.jpg", grayImg)
 	print(f"   - Frame {indx} grayscale: DONE")
 
-def detectFaces():
+def detectFaces(n):
 	faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-	for i in range(nFrames):
+	for i in range(n):
 		gray = cv2.imread(gPath + str(i) + ".jpg")
 		faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=3, minSize=(30, 30)) 
 		for (x, y, w, h) in faces:
 			cv2.rectangle(gray, (x, y), (x + w, y + h), (0, 255, 0), 2)
 			roiColor = gray[y:y + h, x:x + w]
 		status = cv2.imwrite(f"{facesP}{i}.jpg", roiColor)
-		print(f"[3]- Image {i}.jpg written to filesystem: ", status)
+		print(f"   - Image {i}.jpg written: ", status)
 	
 def main():
 	print("[1]- SPLITTING: STARTING...")
 	nFrames = splitToFrames(vPath, fPath, 0, extension, nVids)
 	print("[2]- GRAYSCALING: STARTING...")
-	for i in range(nFrames):
+	nf = nFrames
+	for i in range(nf):
 		imgToGrayscale((fPath + str(i) + ".jpg"), gPath, i)
 	print("[2]- GRAYSCALING: DONE")  
 	print("[3]- FACE DETECTION: STARTING...")
-	detectFaces()
+	detectFaces(nf)
 	print("[3]- FACE DETECTION: DONE")
 		
 main()
